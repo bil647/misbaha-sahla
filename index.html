@@ -1,681 +1,1313 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0F3D3E">
-<title>سبحة</title>
-<link rel="manifest" href="manifest.json">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --teal-deep:#0F3D3E;
-    --teal-dark:#0A2C2D;
-    --bg-start:#0A2C2D;
-    --bg-end:#061c1d;
-    --gold:#C9A227;
-    --gold-soft:#E4C766;
-    --parchment:#F7F1E3;
-    --sand-muted:#8C7A54;
-  }
-  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  html,body{
-    margin:0; padding:0; height:100%; width:100%;
-    background: radial-gradient(circle at 50% 20%, var(--bg-start), var(--bg-end) 85%);
-    color:var(--parchment);
-    font-family:'Tajawal', sans-serif;
-    overflow:hidden;
-    user-select:none;
-    -webkit-user-select:none;
-    touch-action:none;
-    transition: background 0.4s ease;
-  }
-  #app{
-    height:100%;
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:space-between;
-    padding: env(safe-area-inset-top,28px) 20px calc(env(safe-area-inset-bottom,20px) + 14px);
-    position:relative;
-  }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0F3D3E" />
+    <title>سبحة</title>
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📿</text></svg>" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📿</text></svg>" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <style>
+        /* ─── CSS Variables (themes) ─── */
+        :root {
+            --teal-deep: #0F3D3E;
+            --teal-dark: #0A2C2D;
+            --bg-start: #0A2C2D;
+            --bg-end: #061c1d;
+            --gold: #C9A227;
+            --gold-soft: #E4C766;
+            --parchment: #F7F1E3;
+            --sand-muted: #8C7A54;
+        }
 
-  /* ---- settings button ---- */
-  #settingsBtn{
-    position:fixed;
-    top:calc(env(safe-area-inset-top,10px) + 14px);
-    inset-inline-end:18px;
-    width:38px;height:38px;
-    border-radius:50%;
-    border:1px solid rgba(228,199,102,0.25);
-    background:rgba(255,255,255,0.04);
-    color:var(--gold-soft);
-    font-size:18px;
-    display:flex;align-items:center;justify-content:center;
-    z-index:6;
-    cursor:pointer;
-  }
-  #settingsBtn:active{ background:rgba(255,255,255,0.09); }
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            margin: 0;
+            padding: 0;
+        }
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            background: radial-gradient(circle at 50% 20%, var(--bg-start), var(--bg-end) 85%);
+            color: var(--parchment);
+            font-family: 'Tajawal', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+            transition: background 0.5s ease;
+        }
 
-  /* ---- top: phrase + total ---- */
-  #top{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:6px;
-    margin-top:8px;
-  }
-  #phrase{
-    font-family:'Amiri', serif;
-    font-size:clamp(22px, 6.4vw, 34px);
-    color:var(--gold-soft);
-    letter-spacing:0.5px;
-    text-align:center;
-    max-width:88vw;
-    line-height:1.4;
-  }
-  #totalLabel{
-    font-size:13px;
-    color:var(--sand-muted);
-    font-weight:400;
-  }
+        #app {
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: env(safe-area-inset-top, 28px) 20px calc(env(safe-area-inset-bottom, 20px) + 14px);
+            position: relative;
+        }
 
-  /* ---- center: ring + counter ---- */
-  #center{
-    flex:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    position:relative;
-    width:100%;
-  }
-  #ringWrap{
-    position:relative;
-    width:min(72vw, 300px);
-    height:min(72vw, 300px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-  }
-  svg#ring{ position:absolute; top:0; left:0; width:100%; height:100%; transform:rotate(-90deg); overflow:visible; }
-  svg#ring circle.track{ fill:none; stroke:rgba(255,255,255,0.06); stroke-width:10; transition:opacity 0.25s ease; }
-  svg#ring circle.fill{ fill:none; stroke:var(--gold); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 0.15s ease-out, opacity 0.25s ease; }
+        /* ─── Settings button (new) ─── */
+        #settingsBtn {
+            position: fixed;
+            bottom: calc(env(safe-area-inset-bottom, 10px) + 20px);
+            inset-inline-end: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(228, 199, 102, 0.2);
+            background: rgba(15, 61, 62, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: var(--gold-soft);
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 6;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.15s, background 0.2s;
+        }
+        #settingsBtn:active {
+            transform: scale(0.90);
+            background: rgba(15, 61, 62, 0.95);
+        }
 
-  #beadsGroup{ transform-origin:110px 110px; opacity:0; transition:opacity 0.25s ease; }
-  #beadsGroup circle.bead{ fill:rgba(255,255,255,0.12); transition:fill 0.15s ease-out; }
-  #beadsGroup circle.bead.lit{ fill:var(--gold); }
+        /* ─── Top: phrase + total ─── */
+        #top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin-top: 4px;
+            width: 100%;
+        }
+        #phrase {
+            font-family: 'Amiri', serif;
+            font-size: clamp(22px, 6.4vw, 36px);
+            color: var(--gold-soft);
+            letter-spacing: 0.5px;
+            text-align: center;
+            max-width: 92vw;
+            line-height: 1.5;
+            font-weight: 700;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+        }
+        #totalLabel {
+            font-size: 13px;
+            color: var(--sand-muted);
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+        #totalLabel span {
+            font-weight: 500;
+            color: var(--parchment);
+        }
 
-  #ringWrap.shape-beads svg#ring circle.track,
-  #ringWrap.shape-beads svg#ring circle.fill{ opacity:0; }
-  #ringWrap.shape-beads #beadsGroup{ opacity:1; animation: spin 90s linear infinite; }
-  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
+        /* ─── Center: ring + counter ─── */
+        #center {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+            min-height: 0;
+        }
+        #ringWrap {
+            position: relative;
+            width: min(72vw, 300px);
+            height: min(72vw, 300px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-  #count{
-    font-family:'Amiri', serif;
-    font-weight:700;
-    font-size:clamp(56px, 18vw, 96px);
-    line-height:1;
-    color:var(--parchment);
-    transition:transform 0.12s ease-out;
-  }
-  #count.pulse{ transform:scale(1.08); }
-  #targetLine{
-    position:absolute;
-    bottom:-6px;
-    font-size:14px;
-    color:var(--sand-muted);
-  }
+        svg#ring {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+            overflow: visible;
+        }
+        svg#ring circle.track {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.06);
+            stroke-width: 10;
+            transition: opacity 0.3s ease;
+        }
+        svg#ring circle.fill {
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 10;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.18s ease-out, opacity 0.3s ease;
+        }
 
-  #hint{
-    font-size:13px;
-    color:var(--sand-muted);
-    margin-top:18px;
-    opacity:0.8;
-  }
+        #beadsGroup {
+            transform-origin: 110px 110px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #beadsGroup circle.bead {
+            fill: rgba(255, 255, 255, 0.10);
+            transition: fill 0.2s ease-out, r 0.2s ease;
+        }
+        #beadsGroup circle.bead.lit {
+            fill: var(--gold);
+        }
 
-  /* ---- bottom: phrase pills + reset ---- */
-  #bottom{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:16px;
-  }
-  #pills{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    justify-content:center;
-    max-width:340px;
-  }
-  .pill{
-    font-family:'Tajawal', sans-serif;
-    font-size:13px;
-    padding:8px 14px;
-    border-radius:999px;
-    border:1px solid rgba(228,199,102,0.25);
-    background:rgba(255,255,255,0.03);
-    color:var(--sand-muted);
-    cursor:pointer;
-  }
-  .pill.active{
-    background:rgba(201,162,39,0.15);
-    border-color:var(--gold);
-    color:var(--gold-soft);
-  }
-  #resetBtn{
-    font-family:'Tajawal', sans-serif;
-    font-size:14px;
-    font-weight:500;
-    padding:11px 34px;
-    border-radius:999px;
-    border:1px solid rgba(247,241,227,0.15);
-    background:transparent;
-    color:var(--parchment);
-    opacity:0.85;
-    cursor:pointer;
-  }
-  #resetBtn:active{ background:rgba(255,255,255,0.06); }
+        #ringWrap.shape-beads svg#ring circle.track,
+        #ringWrap.shape-beads svg#ring circle.fill {
+            opacity: 0;
+        }
+        #ringWrap.shape-beads #beadsGroup {
+            opacity: 1;
+            animation: spin 120s linear infinite;
+        }
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-  #flash{
-    position:fixed; inset:0;
-    background:var(--gold);
-    opacity:0;
-    pointer-events:none;
-    z-index:5;
-  }
-  #flash.on{ animation:flashAnim 0.5s ease-out; }
-  @keyframes flashAnim{
-    0%{opacity:0;} 15%{opacity:0.18;} 100%{opacity:0;}
-  }
+        #count {
+            font-family: 'Amiri', serif;
+            font-weight: 700;
+            font-size: clamp(56px, 18vw, 96px);
+            line-height: 1;
+            color: var(--parchment);
+            transition: transform 0.10s ease-out;
+            z-index: 2;
+            text-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+        #count.pulse {
+            transform: scale(1.08);
+        }
 
-  #confirmOverlay{
-    position:fixed; inset:0;
-    background:rgba(6,20,20,0.88);
-    display:none;
-    align-items:center; justify-content:center;
-    z-index:10;
-  }
-  #confirmOverlay.show{ display:flex; }
-  #confirmBox{
-    background:var(--teal-dark);
-    border:1px solid rgba(228,199,102,0.2);
-    border-radius:18px;
-    padding:26px 28px;
-    text-align:center;
-    max-width:280px;
-  }
-  #confirmBox p{ margin:0 0 18px; font-size:15px; color:var(--parchment); }
-  #confirmBtns{ display:flex; gap:10px; justify-content:center; }
-  #confirmBtns button{
-    font-family:'Tajawal', sans-serif;
-    padding:9px 20px;
-    border-radius:999px;
-    border:none;
-    font-size:14px;
-    cursor:pointer;
-  }
-  #confirmYes{ background:var(--gold); color:var(--teal-dark); font-weight:700; }
-  #confirmNo{ background:rgba(255,255,255,0.08); color:var(--parchment); }
+        #targetLine {
+            position: absolute;
+            bottom: -2px;
+            font-size: 13px;
+            color: var(--sand-muted);
+            font-weight: 300;
+            letter-spacing: 0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        #targetLine span {
+            font-weight: 500;
+            color: var(--gold-soft);
+        }
+        #editTargetBtn {
+            background: none;
+            border: none;
+            color: var(--gold-soft);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: rgba(201, 162, 39, 0.10);
+            transition: background 0.2s;
+        }
+        #editTargetBtn:active {
+            background: rgba(201, 162, 39, 0.25);
+        }
 
-  /* ---- settings overlay ---- */
-  #settingsOverlay{
-    position:fixed; inset:0;
-    background:rgba(6,20,20,0.9);
-    display:none;
-    align-items:center; justify-content:center;
-    z-index:11;
-  }
-  #settingsOverlay.show{ display:flex; }
-  #settingsBox{
-    background:var(--teal-dark);
-    border:1px solid rgba(228,199,102,0.2);
-    border-radius:18px;
-    padding:24px 26px;
-    max-width:320px;
-    width:88vw;
-  }
-  #settingsBox h3{
-    margin:0 0 20px;
-    font-size:16px;
-    color:var(--gold-soft);
-    text-align:center;
-    font-weight:700;
-  }
-  .settings-section{ margin-bottom:20px; }
-  .settings-label{ font-size:13px; color:var(--sand-muted); margin-bottom:10px; }
-  #bgSwatches{ display:flex; gap:10px; flex-wrap:wrap; }
-  .swatch{
-    width:34px; height:34px;
-    border-radius:50%;
-    border:2px solid transparent;
-    cursor:pointer;
-    display:flex; align-items:center; justify-content:center;
-    overflow:hidden;
-    flex-shrink:0;
-  }
-  .swatch.active{ border-color:var(--gold); }
-  .swatch.custom{
-    background:conic-gradient(from 0deg, #C9A227, #7A9E9F, #3D0F1E, #0F2A45, #C9A227);
-    padding:3px;
-  }
-  .swatch.custom input[type=color]{
-    width:150%; height:150%;
-    border:none; padding:0; margin:0;
-    cursor:pointer; background:none;
-  }
-  #shapeOptions{ display:flex; gap:8px; }
-  .shape-option{
-    font-family:'Tajawal', sans-serif;
-    font-size:13px;
-    padding:8px 16px;
-    border-radius:999px;
-    border:1px solid rgba(228,199,102,0.25);
-    background:rgba(255,255,255,0.03);
-    color:var(--sand-muted);
-    cursor:pointer;
-  }
-  .shape-option.active{
-    background:rgba(201,162,39,0.15);
-    border-color:var(--gold);
-    color:var(--gold-soft);
-  }
-  #settingsClose{
-    width:100%;
-    margin-top:6px;
-    font-family:'Tajawal', sans-serif;
-    padding:11px;
-    border-radius:999px;
-    border:none;
-    background:var(--gold);
-    color:var(--teal-dark);
-    font-weight:700;
-    font-size:14px;
-    cursor:pointer;
-  }
-</style>
+        /* ─── hint ─── */
+        #hint {
+            font-size: 13px;
+            color: var(--sand-muted);
+            opacity: 0.6;
+            font-weight: 300;
+            letter-spacing: 0.2px;
+            margin: 4px 0 2px;
+        }
+
+        /* ─── Bottom: select + add ─── */
+        #bottom {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        #selectRow {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 360px;
+            align-items: center;
+        }
+        #selectRow select {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(228, 199, 102, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--parchment);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            -webkit-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C9A227' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: left 12px center;
+            padding-right: 36px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        #selectRow select:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        #selectRow select option {
+            background: var(--teal-dark);
+            color: var(--parchment);
+        }
+
+        #addPhraseRow {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+            max-width: 360px;
+        }
+        #addPhraseRow input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(228, 199, 102, 0.15);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--parchment);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+            transition: border-color 0.2s;
+        }
+        #addPhraseRow input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        #addPhraseRow input::placeholder {
+            color: var(--sand-muted);
+            opacity: 0.6;
+        }
+        #addPhraseBtn {
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid rgba(228, 199, 102, 0.2);
+            background: rgba(201, 162, 39, 0.12);
+            color: var(--gold-soft);
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, transform 0.15s;
+        }
+        #addPhraseBtn:active {
+            transform: scale(0.94);
+            background: rgba(201, 162, 39, 0.25);
+        }
+
+        #resetBtn {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 11px 38px;
+            border-radius: 999px;
+            border: 1px solid rgba(247, 241, 227, 0.10);
+            background: transparent;
+            color: var(--parchment);
+            opacity: 0.7;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+        #resetBtn:active {
+            background: rgba(255, 255, 255, 0.06);
+            transform: scale(0.94);
+        }
+
+        /* ─── Flash ─── */
+        #flash {
+            position: fixed;
+            inset: 0;
+            background: var(--gold);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #flash.on {
+            animation: flashAnim 0.5s ease-out;
+        }
+        @keyframes flashAnim {
+            0% {
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.16;
+            }
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* ─── Confirm overlay ─── */
+        #confirmOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 20, 20, 0.90);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #confirmOverlay.show {
+            display: flex;
+        }
+        #confirmBox {
+            background: var(--teal-dark);
+            border: 1px solid rgba(228, 199, 102, 0.15);
+            border-radius: 20px;
+            padding: 28px 30px;
+            text-align: center;
+            max-width: 290px;
+            width: 88vw;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        #confirmBox p {
+            margin: 0 0 20px;
+            font-size: 16px;
+            color: var(--parchment);
+            font-weight: 400;
+            line-height: 1.6;
+        }
+        #confirmBtns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        #confirmBtns button {
+            font-family: 'Tajawal', sans-serif;
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #confirmBtns button:active {
+            transform: scale(0.94);
+        }
+        #confirmYes {
+            background: var(--gold);
+            color: var(--teal-dark);
+            font-weight: 700;
+        }
+        #confirmNo {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--parchment);
+        }
+
+        /* ─── Settings overlay ─── */
+        #settingsOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 20, 20, 0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 11;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        #settingsOverlay.show {
+            display: flex;
+        }
+        #settingsBox {
+            background: var(--teal-dark);
+            border: 1px solid rgba(228, 199, 102, 0.12);
+            border-radius: 20px;
+            padding: 26px 28px;
+            max-width: 340px;
+            width: 90vw;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        #settingsBox h3 {
+            margin: 0 0 22px;
+            font-size: 18px;
+            color: var(--gold-soft);
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .settings-section {
+            margin-bottom: 22px;
+        }
+        .settings-label {
+            font-size: 13px;
+            color: var(--sand-muted);
+            margin-bottom: 10px;
+            font-weight: 300;
+            letter-spacing: 0.3px;
+        }
+        #bgSwatches {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .swatch {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            flex-shrink: 0;
+            transition: border-color 0.2s, transform 0.15s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        .swatch:active {
+            transform: scale(0.90);
+        }
+        .swatch.active {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.2);
+        }
+        .swatch.custom {
+            background: conic-gradient(from 0deg, #C9A227, #7A9E9F, #3D0F1E, #0F2A45, #C9A227);
+            padding: 3px;
+        }
+        .swatch.custom input[type="color"] {
+            width: 150%;
+            height: 150%;
+            border: none;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            background: none;
+            border-radius: 50%;
+        }
+
+        #shapeOptions {
+            display: flex;
+            gap: 10px;
+        }
+        .shape-option {
+            font-family: 'Tajawal', sans-serif;
+            font-size: 13px;
+            padding: 9px 20px;
+            border-radius: 999px;
+            border: 1px solid rgba(228, 199, 102, 0.15);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--sand-muted);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .shape-option:active {
+            transform: scale(0.94);
+        }
+        .shape-option.active {
+            background: rgba(201, 162, 39, 0.14);
+            border-color: var(--gold);
+            color: var(--gold-soft);
+        }
+
+        #settingsClose {
+            width: 100%;
+            margin-top: 6px;
+            font-family: 'Tajawal', sans-serif;
+            padding: 12px;
+            border-radius: 999px;
+            border: none;
+            background: var(--gold);
+            color: var(--teal-dark);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #settingsClose:active {
+            transform: scale(0.96);
+        }
+
+        /* ─── Target edit overlay ─── */
+        #targetOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6, 20, 20, 0.90);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 12;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        #targetOverlay.show {
+            display: flex;
+        }
+        #targetBox {
+            background: var(--teal-dark);
+            border: 1px solid rgba(228, 199, 102, 0.15);
+            border-radius: 20px;
+            padding: 28px 30px;
+            text-align: center;
+            max-width: 290px;
+            width: 88vw;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+        }
+        #targetBox p {
+            margin: 0 0 16px;
+            font-size: 15px;
+            color: var(--parchment);
+        }
+        #targetBox input {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(228, 199, 102, 0.2);
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--parchment);
+            font-size: 18px;
+            font-family: 'Tajawal', sans-serif;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        #targetBox input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        #targetBtns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        #targetBtns button {
+            font-family: 'Tajawal', sans-serif;
+            padding: 10px 24px;
+            border-radius: 999px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        #targetBtns button:active {
+            transform: scale(0.94);
+        }
+        #targetSave {
+            background: var(--gold);
+            color: var(--teal-dark);
+            font-weight: 700;
+        }
+        #targetCancel {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--parchment);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 400px) {
+            #ringWrap {
+                width: min(74vw, 240px);
+                height: min(74vw, 240px);
+            }
+            #count {
+                font-size: clamp(44px, 16vw, 72px);
+            }
+            #phrase {
+                font-size: clamp(18px, 5.6vw, 28px);
+            }
+            #selectRow select,
+            #addPhraseRow input {
+                font-size: 13px;
+                padding: 8px 12px;
+            }
+            #addPhraseBtn {
+                font-size: 13px;
+                padding: 8px 14px;
+            }
+        }
+        @media (min-width: 600px) {
+            #ringWrap {
+                width: 300px;
+                height: 300px;
+            }
+            #count {
+                font-size: 96px;
+            }
+        }
+        @supports (padding: max(0px)) {
+            #app {
+                padding-left: max(20px, env(safe-area-inset-left));
+                padding-right: max(20px, env(safe-area-inset-right));
+            }
+        }
+    </style>
 </head>
 <body>
-<div id="flash"></div>
-<button id="settingsBtn" aria-label="الإعدادات">⚙</button>
-<div id="app">
 
-  <div id="top">
-    <div id="phrase">سُبْحَانَ اللَّه</div>
-    <div id="totalLabel">الإجمالي: <span id="totalVal">0</span></div>
-  </div>
+    <!-- ─── Flash ─── -->
+    <div id="flash"></div>
 
-  <div id="center">
-    <div id="ringWrap">
-      <svg id="ring" viewBox="0 0 220 220">
-        <circle class="track" cx="110" cy="110" r="100"></circle>
-        <circle class="fill" id="ringFill" cx="110" cy="110" r="100"></circle>
-        <g id="beadsGroup"></g>
-      </svg>
-      <div id="count">0</div>
-      <div id="targetLine">الهدف: <span id="targetVal">33</span></div>
+    <!-- ─── Settings button (new position & style) ─── -->
+    <button id="settingsBtn" aria-label="الإعدادات">⚙</button>
+
+    <!-- ─── Main app ─── -->
+    <div id="app">
+
+        <div id="top">
+            <div id="phrase">سُبْحَانَ اللَّه</div>
+            <div id="totalLabel">الإجمالي: <span id="totalVal">0</span></div>
+        </div>
+
+        <div id="center">
+            <div id="ringWrap">
+                <svg id="ring" viewBox="0 0 220 220">
+                    <circle class="track" cx="110" cy="110" r="100"></circle>
+                    <circle class="fill" id="ringFill" cx="110" cy="110" r="100"></circle>
+                    <g id="beadsGroup"></g>
+                </svg>
+                <div id="count">0</div>
+                <div id="targetLine">
+                    <span>الهدف: <span id="targetVal">33</span></span>
+                    <button id="editTargetBtn">✎ تعديل</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="hint">مرّر بإصبعك لأعلى أو لأسفل للعدّ</div>
+
+        <div id="bottom">
+            <!-- قائمة منسدلة لاختيار التسبيحة -->
+            <div id="selectRow">
+                <select id="phraseSelect"></select>
+            </div>
+            <!-- إضافة تسبيحة جديدة -->
+            <div id="addPhraseRow">
+                <input type="text" id="newPhraseInput" placeholder="اكتب تسبيحة جديدة..." />
+                <button id="addPhraseBtn">➕ أضف</button>
+            </div>
+            <button id="resetBtn">تصفير</button>
+        </div>
+
     </div>
-  </div>
 
-  <div id="hint">مرّر بإصبعك لأعلى أو لأسفل للعدّ</div>
-
-  <div id="bottom">
-    <div id="pills"></div>
-    <button id="resetBtn">تصفير</button>
-  </div>
-
-</div>
-
-<div id="confirmOverlay">
-  <div id="confirmBox">
-    <p>هل تريد تصفير العدّاد الحالي؟</p>
-    <div id="confirmBtns">
-      <button id="confirmYes">نعم، صفّر</button>
-      <button id="confirmNo">إلغاء</button>
+    <!-- ─── Confirm reset ─── -->
+    <div id="confirmOverlay">
+        <div id="confirmBox">
+            <p>هل تريد تصفير العدّاد الحالي؟</p>
+            <div id="confirmBtns">
+                <button id="confirmYes">نعم، صفّر</button>
+                <button id="confirmNo">إلغاء</button>
+            </div>
+        </div>
     </div>
-  </div>
-</div>
 
-<div id="settingsOverlay">
-  <div id="settingsBox">
-    <h3>الإعدادات</h3>
-    <div class="settings-section">
-      <div class="settings-label">لون الخلفية</div>
-      <div id="bgSwatches"></div>
+    <!-- ─── Settings overlay ─── -->
+    <div id="settingsOverlay">
+        <div id="settingsBox">
+            <h3>الإعدادات</h3>
+            <div class="settings-section">
+                <div class="settings-label">لون الخلفية</div>
+                <div id="bgSwatches"></div>
+            </div>
+            <div class="settings-section">
+                <div class="settings-label">شكل العدّاد</div>
+                <div id="shapeOptions">
+                    <div class="shape-option" data-shape="ring">حلقة</div>
+                    <div class="shape-option" data-shape="beads">سبحة</div>
+                </div>
+            </div>
+            <button id="settingsClose">تم</button>
+        </div>
     </div>
-    <div class="settings-section">
-      <div class="settings-label">شكل العدّاد</div>
-      <div id="shapeOptions">
-        <div class="shape-option" data-shape="ring">حلقة</div>
-        <div class="shape-option" data-shape="beads">سبحة</div>
-      </div>
+
+    <!-- ─── Target edit overlay ─── -->
+    <div id="targetOverlay">
+        <div id="targetBox">
+            <p>أدخل الهدف الجديد</p>
+            <input type="number" id="targetInput" min="1" step="1" value="33" />
+            <div id="targetBtns">
+                <button id="targetSave">حفظ</button>
+                <button id="targetCancel">إلغاء</button>
+            </div>
+        </div>
     </div>
-    <button id="settingsClose">تم</button>
-  </div>
-</div>
 
-<script>
-(function(){
-  const PHRASES = [
-    { key:"subhan",     label:"سُبْحَانَ اللَّه",                    short:"سبحان الله",       target:33  },
-    { key:"hamd",       label:"الْحَمْدُ لِلَّه",                     short:"الحمد لله",         target:33  },
-    { key:"tahlil",     label:"لَا إِلَٰهَ إِلَّا اللَّه",              short:"لا إله إلا الله",   target:33  },
-    { key:"takbir",     label:"اللَّهُ أَكْبَر",                      short:"الله أكبر",         target:34  },
-    { key:"istighfar",  label:"أَسْتَغْفِرُ اللَّه",                   short:"أستغفر الله",       target:100 },
-    { key:"salawat",    label:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّد",         short:"الصلاة على النبي",  target:100 },
-    { key:"yunus",      label:"لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", short:"تسبيحة يونس", target:100 },
-    { key:"ibrahimiyah",label:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ", short:"الصلاة الإبراهيمية", target:10 },
-  ];
+    <script>
+        (function() {
+            'use strict';
 
-  const STORE_KEY = "tasbih_counts_v1";
-  const TOTAL_KEY = "tasbih_total_v1";
-  const THEME_KEY = "tasbih_theme_v1";
-  const THEME_CUSTOM_KEY = "tasbih_theme_custom_v1";
-  const SHAPE_KEY = "tasbih_shape_v1";
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  DATA
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const THEMES = {
-    teal:     { "--teal-deep":"#0F3D3E", "--teal-dark":"#0A2C2D", "--bg-start":"#0A2C2D", "--bg-end":"#061c1d" },
-    navy:     { "--teal-deep":"#0F2A45", "--teal-dark":"#0A1C2F", "--bg-start":"#0A1C2F", "--bg-end":"#040c14" },
-    emerald:  { "--teal-deep":"#0F3D22", "--teal-dark":"#0A2C18", "--bg-start":"#0A2C18", "--bg-end":"#04140b" },
-    maroon:   { "--teal-deep":"#3D0F1E", "--teal-dark":"#2C0A16", "--bg-start":"#2C0A16", "--bg-end":"#14050a" },
-    midnight: { "--teal-deep":"#242424", "--teal-dark":"#141414", "--bg-start":"#141414", "--bg-end":"#000000" },
-  };
+            const DEFAULT_PHRASES = [{
+                key: "subhan",
+                label: "سُبْحَانَ اللَّه",
+                short: "سبحان الله",
+                target: 33
+            }, {
+                key: "hamd",
+                label: "الْحَمْدُ لِلَّه",
+                short: "الحمد لله",
+                target: 33
+            }, {
+                key: "tahlil",
+                label: "لَا إِلَٰهَ إِلَّا اللَّه",
+                short: "لا إله إلا الله",
+                target: 33
+            }, {
+                key: "takbir",
+                label: "اللَّهُ أَكْبَر",
+                short: "الله أكبر",
+                target: 34
+            }, {
+                key: "istighfar",
+                label: "أَسْتَغْفِرُ اللَّه",
+                short: "أستغفر الله",
+                target: 100
+            }, {
+                key: "salawat",
+                label: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّد",
+                short: "الصلاة على النبي",
+                target: 100
+            }, {
+                key: "yunus",
+                label: "لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ",
+                short: "تسبيحة يونس",
+                target: 100
+            }, {
+                key: "ibrahimiyah",
+                label: "اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ",
+                short: "الصلاة الإبراهيمية",
+                target: 10
+            }, ];
 
-  const BEADS_COUNT = 33;
+            const STORE_KEY = "tasbih_counts_v1";
+            const TOTAL_KEY = "tasbih_total_v1";
+            const THEME_KEY = "tasbih_theme_v1";
+            const THEME_CUSTOM_KEY = "tasbih_theme_custom_v1";
+            const SHAPE_KEY = "tasbih_shape_v1";
+            const ACTIVE_KEY = "tasbih_active_v1";
+            const PHRASES_KEY = "tasbih_phrases_v1";
 
-  let counts = {};
-  let total = 0;
-  try{
-    const saved = localStorage.getItem(STORE_KEY);
-    counts = saved ? JSON.parse(saved) : {};
-    total = parseInt(localStorage.getItem(TOTAL_KEY) || "0", 10);
-  }catch(e){ counts = {}; total = 0; }
+            const THEMES = {
+                teal: { "--teal-deep": "#0F3D3E", "--teal-dark": "#0A2C2D", "--bg-start": "#0A2C2D",
+                    "--bg-end": "#061c1d" },
+                navy: { "--teal-deep": "#0F2A45", "--teal-dark": "#0A1C2F", "--bg-start": "#0A1C2F",
+                    "--bg-end": "#040c14" },
+                emerald: { "--teal-deep": "#0F3D22", "--teal-dark": "#0A2C18", "--bg-start": "#0A2C18",
+                    "--bg-end": "#04140b" },
+                maroon: { "--teal-deep": "#3D0F1E", "--teal-dark": "#2C0A16", "--bg-start": "#2C0A16",
+                    "--bg-end": "#14050a" },
+                midnight: { "--teal-deep": "#242424", "--teal-dark": "#141414", "--bg-start": "#141414",
+                    "--bg-end": "#000000" },
+            };
 
-  let activeIndex = 0;
-  try{
-    const lastActive = localStorage.getItem("tasbih_active_v1");
-    if(lastActive !== null) activeIndex = Math.min(parseInt(lastActive,10) || 0, PHRASES.length-1);
-  }catch(e){}
+            const BEADS_COUNT = 33;
+            const CIRC = 2 * Math.PI * 100;
 
-  let currentTheme = "teal";
-  let customColorValue = "#0F3D3E";
-  let ringStyle = "ring";
-  try{
-    currentTheme = localStorage.getItem(THEME_KEY) || "teal";
-    customColorValue = localStorage.getItem(THEME_CUSTOM_KEY) || "#0F3D3E";
-    ringStyle = localStorage.getItem(SHAPE_KEY) || "ring";
-  }catch(e){}
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  STATE
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  const phraseEl = document.getElementById("phrase");
-  const countEl = document.getElementById("count");
-  const targetValEl = document.getElementById("targetVal");
-  const totalValEl = document.getElementById("totalVal");
-  const ringFill = document.getElementById("ringFill");
-  const ringWrapEl = document.getElementById("ringWrap");
-  const beadsGroupEl = document.getElementById("beadsGroup");
-  const pillsEl = document.getElementById("pills");
-  const resetBtn = document.getElementById("resetBtn");
-  const flashEl = document.getElementById("flash");
-  const confirmOverlay = document.getElementById("confirmOverlay");
-  const confirmYes = document.getElementById("confirmYes");
-  const confirmNo = document.getElementById("confirmNo");
-  const settingsBtn = document.getElementById("settingsBtn");
-  const settingsOverlay = document.getElementById("settingsOverlay");
-  const settingsClose = document.getElementById("settingsClose");
-  const bgSwatchesEl = document.getElementById("bgSwatches");
+            let phrases = [];
+            let counts = {};
+            let total = 0;
+            let activeIndex = 0;
+            let currentTheme = "teal";
+            let customColorValue = "#0F3D3E";
+            let ringStyle = "ring";
 
-  const CIRC = 2 * Math.PI * 100;
-  ringFill.style.strokeDasharray = CIRC;
+            // load phrases from localStorage or default
+            try {
+                const stored = localStorage.getItem(PHRASES_KEY);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        phrases = parsed;
+                    } else {
+                        phrases = JSON.parse(JSON.stringify(DEFAULT_PHRASES));
+                    }
+                } else {
+                    phrases = JSON.parse(JSON.stringify(DEFAULT_PHRASES));
+                }
+            } catch (_) {
+                phrases = JSON.parse(JSON.stringify(DEFAULT_PHRASES));
+            }
 
-  function currentCount(){
-    const key = PHRASES[activeIndex].key;
-    return counts[key] || 0;
-  }
-  function setCurrentCount(v){
-    const key = PHRASES[activeIndex].key;
-    counts[key] = v;
-    persist();
-  }
-  function persist(){
-    try{
-      localStorage.setItem(STORE_KEY, JSON.stringify(counts));
-      localStorage.setItem(TOTAL_KEY, String(total));
-      localStorage.setItem("tasbih_active_v1", String(activeIndex));
-    }catch(e){}
-  }
+            // ensure each phrase has a unique key
+            phrases.forEach((p, i) => {
+                if (!p.key) p.key = 'custom_' + i + '_' + Date.now();
+                if (!p.short) p.short = p.label.substring(0, 12) + '…';
+            });
 
-  function renderPills(){
-    pillsEl.innerHTML = "";
-    PHRASES.forEach((p, i) => {
-      const btn = document.createElement("div");
-      btn.className = "pill" + (i === activeIndex ? " active" : "");
-      btn.textContent = p.short;
-      btn.addEventListener("click", () => {
-        activeIndex = i;
-        renderPills();
-        renderAll();
-        persist();
-      });
-      pillsEl.appendChild(btn);
-    });
-  }
+            try {
+                const saved = localStorage.getItem(STORE_KEY);
+                counts = saved ? JSON.parse(saved) : {};
+                total = parseInt(localStorage.getItem(TOTAL_KEY) || "0", 10);
+                const lastActive = localStorage.getItem(ACTIVE_KEY);
+                if (lastActive !== null) activeIndex = Math.min(parseInt(lastActive, 10) || 0, phrases.length - 1);
+                currentTheme = localStorage.getItem(THEME_KEY) || "teal";
+                customColorValue = localStorage.getItem(THEME_CUSTOM_KEY) || "#0F3D3E";
+                ringStyle = localStorage.getItem(SHAPE_KEY) || "ring";
+            } catch (_) { /* ignore */ }
 
-  /* ---- beads ring (misbaha-style) ---- */
-  function polarPoint(cx, cy, r, angleDeg){
-    const rad = (angleDeg - 90) * Math.PI/180;
-    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
-  }
-  function buildBeads(){
-    beadsGroupEl.innerHTML = "";
-    for(let i=0;i<BEADS_COUNT;i++){
-      const angle = (360/BEADS_COUNT)*i;
-      const pt = polarPoint(110,110,100,angle);
-      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      c.setAttribute("cx", pt.x.toFixed(2));
-      c.setAttribute("cy", pt.y.toFixed(2));
-      c.setAttribute("r", 7);
-      c.setAttribute("class","bead");
-      c.setAttribute("data-idx", i);
-      beadsGroupEl.appendChild(c);
-    }
-  }
-  function updateBeads(progress, isFullCycle){
-    const lit = isFullCycle ? BEADS_COUNT : Math.round(progress*BEADS_COUNT);
-    const beads = beadsGroupEl.querySelectorAll(".bead");
-    beads.forEach((b,i)=>{ b.classList.toggle("lit", i < lit); });
-  }
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  DOM refs
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  function renderAll(){
-    const p = PHRASES[activeIndex];
-    phraseEl.textContent = p.label;
-    const c = currentCount();
-    countEl.textContent = c;
-    targetValEl.textContent = p.target;
-    totalValEl.textContent = total;
-    const progress = (c % p.target) / p.target;
-    const isFullCycle = (c > 0 && progress === 0);
-    const offset = CIRC * (1 - progress);
-    ringFill.style.strokeDashoffset = isFullCycle ? 0 : offset;
-    updateBeads(progress, isFullCycle);
-  }
+            const phraseEl = document.getElementById('phrase');
+            const countEl = document.getElementById('count');
+            const targetValEl = document.getElementById('targetVal');
+            const totalValEl = document.getElementById('totalVal');
+            const ringFill = document.getElementById('ringFill');
+            const ringWrapEl = document.getElementById('ringWrap');
+            const beadsGroupEl = document.getElementById('beadsGroup');
+            const resetBtn = document.getElementById('resetBtn');
+            const flashEl = document.getElementById('flash');
+            const confirmOverlay = document.getElementById('confirmOverlay');
+            const confirmYes = document.getElementById('confirmYes');
+            const confirmNo = document.getElementById('confirmNo');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const settingsOverlay = document.getElementById('settingsOverlay');
+            const settingsClose = document.getElementById('settingsClose');
+            const bgSwatchesEl = document.getElementById('bgSwatches');
+            const phraseSelect = document.getElementById('phraseSelect');
+            const newPhraseInput = document.getElementById('newPhraseInput');
+            const addPhraseBtn = document.getElementById('addPhraseBtn');
+            const editTargetBtn = document.getElementById('editTargetBtn');
+            const targetOverlay = document.getElementById('targetOverlay');
+            const targetInput = document.getElementById('targetInput');
+            const targetSave = document.getElementById('targetSave');
+            const targetCancel = document.getElementById('targetCancel');
 
-  function vibrate(pattern){
-    if(navigator.vibrate){ try{ navigator.vibrate(pattern); }catch(e){} }
-  }
+            ringFill.style.strokeDasharray = CIRC;
 
-  function chime(){
-    try{
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.type = "sine";
-      o.frequency.value = 660;
-      g.gain.value = 0.0001;
-      o.connect(g); g.connect(ctx.destination);
-      const now = ctx.currentTime;
-      g.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
-      o.start(now);
-      o.stop(now + 0.42);
-    }catch(e){}
-  }
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  HELPERS
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  function increment(){
-    const p = PHRASES[activeIndex];
-    let c = currentCount() + 1;
-    setCurrentCount(c);
-    total += 1;
-    persist();
-    renderAll();
+            function currentPhrase() {
+                return phrases[activeIndex] || phrases[0];
+            }
 
-    countEl.classList.add("pulse");
-    setTimeout(() => countEl.classList.remove("pulse"), 140);
-    vibrate(10);
+            function currentCount() {
+                const key = currentPhrase().key;
+                return counts[key] || 0;
+            }
 
-    if(c % p.target === 0){
-      flashEl.classList.remove("on");
-      void flashEl.offsetWidth;
-      flashEl.classList.add("on");
-      vibrate([0,30,60,30]);
-      chime();
-    }
-  }
+            function setCurrentCount(v) {
+                const key = currentPhrase().key;
+                counts[key] = v;
+                persist();
+            }
 
-  /* ---- scroll capture: ONE count per swipe / wheel gesture ---- */
-  const SWIPE_MIN_DISTANCE = 28; // px of movement needed to register a swipe as one count
-  let touchStartY = null;
-  let touchCounted = false;
+            function persist() {
+                try {
+                    localStorage.setItem(STORE_KEY, JSON.stringify(counts));
+                    localStorage.setItem(TOTAL_KEY, String(total));
+                    localStorage.setItem(ACTIVE_KEY, String(activeIndex));
+                    localStorage.setItem(PHRASES_KEY, JSON.stringify(phrases));
+                } catch (_) { /* ignore */ }
+            }
 
-  window.addEventListener("touchstart", (e) => {
-    touchStartY = e.touches[0].clientY;
-    touchCounted = false;
-  }, { passive:true });
+            function polarPoint(cx, cy, r, angleDeg) {
+                const rad = (angleDeg - 90) * Math.PI / 180;
+                return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+            }
 
-  window.addEventListener("touchmove", (e) => {
-    e.preventDefault();
-    if(touchStartY === null || touchCounted) return;
-    const y = e.touches[0].clientY;
-    const delta = Math.abs(y - touchStartY);
-    if(delta >= SWIPE_MIN_DISTANCE){
-      increment();
-      touchCounted = true; // one swipe = one count, ignore further movement until finger lifts
-    }
-  }, { passive:false });
+            function buildBeads() {
+                beadsGroupEl.innerHTML = '';
+                for (let i = 0; i < BEADS_COUNT; i++) {
+                    const angle = (360 / BEADS_COUNT) * i;
+                    const pt = polarPoint(110, 110, 100, angle);
+                    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                    c.setAttribute('cx', pt.x.toFixed(2));
+                    c.setAttribute('cy', pt.y.toFixed(2));
+                    c.setAttribute('r', 7);
+                    c.setAttribute('class', 'bead');
+                    c.setAttribute('data-idx', i);
+                    beadsGroupEl.appendChild(c);
+                }
+            }
 
-  window.addEventListener("touchend", () => {
-    touchStartY = null;
-    touchCounted = false;
-  }, { passive:true });
+            function updateBeads(progress, isFullCycle) {
+                const lit = isFullCycle ? BEADS_COUNT : Math.round(progress * BEADS_COUNT);
+                const beads = beadsGroupEl.querySelectorAll('.bead');
+                beads.forEach((b, i) => {
+                    b.classList.toggle('lit', i < lit);
+                });
+            }
 
-  // mouse wheel: one count per scroll gesture (burst of wheel events)
-  let wheelCounted = false;
-  let wheelResetTimer = null;
-  window.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    if(!wheelCounted){
-      increment();
-      wheelCounted = true;
-    }
-    clearTimeout(wheelResetTimer);
-    wheelResetTimer = setTimeout(() => { wheelCounted = false; }, 250);
-  }, { passive:false });
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  RENDER
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  /* ---- reset ---- */
-  resetBtn.addEventListener("click", () => {
-    confirmOverlay.classList.add("show");
-  });
-  confirmNo.addEventListener("click", () => {
-    confirmOverlay.classList.remove("show");
-  });
-  confirmYes.addEventListener("click", () => {
-    setCurrentCount(0);
-    renderAll();
-    confirmOverlay.classList.remove("show");
-  });
+            function renderAll() {
+                const p = currentPhrase();
+                phraseEl.textContent = p.label;
+                const c = currentCount();
+                countEl.textContent = c;
+                targetValEl.textContent = p.target;
+                totalValEl.textContent = total;
 
-  /* ---- settings: background theme ---- */
-  function shade(hex, percent){
-    let f = parseInt(hex.slice(1),16);
-    let t = percent<0 ? 0 : 255;
-    let p = percent<0 ? percent*-1 : percent;
-    let R = f>>16, G = f>>8 & 0x00FF, B = f & 0x0000FF;
-    return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
-  }
-  function buildThemeFromHex(hex){
-    return {
-      "--teal-deep": hex,
-      "--teal-dark": shade(hex, -0.35),
-      "--bg-start": shade(hex, -0.35),
-      "--bg-end": shade(hex, -0.65),
-    };
-  }
-  function applyTheme(key, customHex){
-    const vars = key === "custom" ? buildThemeFromHex(customHex || customColorValue) : (THEMES[key] || THEMES.teal);
-    Object.keys(vars).forEach(k => document.documentElement.style.setProperty(k, vars[k]));
-    currentTheme = key;
-    try{
-      localStorage.setItem(THEME_KEY, key);
-      if(key === "custom") localStorage.setItem(THEME_CUSTOM_KEY, customColorValue);
-    }catch(e){}
-  }
-  function renderSwatches(){
-    bgSwatchesEl.innerHTML = "";
-    Object.keys(THEMES).forEach(key=>{
-      const sw = document.createElement("div");
-      sw.className = "swatch" + (currentTheme === key ? " active" : "");
-      sw.style.background = THEMES[key]["--teal-deep"];
-      sw.addEventListener("click", () => {
-        applyTheme(key);
-        renderSwatches();
-      });
-      bgSwatchesEl.appendChild(sw);
-    });
-    const customSw = document.createElement("label");
-    customSw.className = "swatch custom" + (currentTheme === "custom" ? " active" : "");
-    customSw.innerHTML = '<input type="color" id="customColorInput" value="'+ customColorValue +'">';
-    bgSwatchesEl.appendChild(customSw);
-    document.getElementById("customColorInput").addEventListener("input", (e) => {
-      customColorValue = e.target.value;
-      applyTheme("custom", customColorValue);
-      renderSwatches();
-    });
-  }
+                const progress = (c % p.target) / p.target;
+                const isFullCycle = (c > 0 && progress === 0);
+                const offset = CIRC * (1 - progress);
+                ringFill.style.strokeDashoffset = isFullCycle ? 0 : offset;
+                updateBeads(progress, isFullCycle);
 
-  /* ---- settings: counter shape ---- */
-  function setShape(shape){
-    ringStyle = shape;
-    ringWrapEl.classList.remove("shape-ring","shape-beads");
-    ringWrapEl.classList.add("shape-" + shape);
-    try{ localStorage.setItem(SHAPE_KEY, shape); }catch(e){}
-    document.querySelectorAll(".shape-option").forEach(o=>{
-      o.classList.toggle("active", o.dataset.shape === shape);
-    });
-    renderAll();
-  }
+                // sync select
+                phraseSelect.value = activeIndex;
+            }
 
-  document.querySelectorAll(".shape-option").forEach(el=>{
-    el.addEventListener("click", () => setShape(el.dataset.shape));
-  });
+            function renderSelect() {
+                phraseSelect.innerHTML = '';
+                phrases.forEach((p, i) => {
+                    const opt = document.createElement('option');
+                    opt.value = i;
+                    opt.textContent = p.short + ' (' + p.target + ')';
+                    phraseSelect.appendChild(opt);
+                });
+                phraseSelect.value = activeIndex;
+            }
 
-  settingsBtn.addEventListener("click", () => settingsOverlay.classList.add("show"));
-  settingsClose.addEventListener("click", () => settingsOverlay.classList.remove("show"));
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  THEME
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  /* ---- init ---- */
-  buildBeads();
-  renderPills();
-  applyTheme(currentTheme, customColorValue);
-  renderSwatches();
-  setShape(ringStyle);
-  renderAll();
+            function shade(hex, percent) {
+                let f = parseInt(hex.slice(1), 16);
+                let t = percent < 0 ? 0 : 255;
+                let p = percent < 0 ? percent * -1 : percent;
+                let R = f >> 16,
+                    G = (f >> 8) & 0x00FF,
+                    B = f & 0x0000FF;
+                return '#' + (0x1000000 + (Math.round((t - R) * p) + R) * 0x10000 +
+                    (Math.round((t - G) * p) + G) * 0x100 +
+                    (Math.round((t - B) * p) + B)).toString(16).slice(1);
+            }
 
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("service-worker.js").catch(()=>{});
-  }
-})();
-</script>
+            function buildThemeFromHex(hex) {
+                return {
+                    '--teal-deep': hex,
+                    '--teal-dark': shade(hex, -0.35),
+                    '--bg-start': shade(hex, -0.35),
+                    '--bg-end': shade(hex, -0.65),
+                };
+            }
+
+            function applyTheme(key, customHex) {
+                const vars = key === 'custom' ? buildThemeFromHex(customHex || customColorValue) : (THEMES[key] ||
+                    THEMES.teal);
+                Object.keys(vars).forEach(k => document.documentElement.style.setProperty(k, vars[k]));
+                currentTheme = key;
+                try {
+                    localStorage.setItem(THEME_KEY, key);
+                    if (key === 'custom') localStorage.setItem(THEME_CUSTOM_KEY, customColorValue);
+                } catch (_) { /* ignore */ }
+            }
+
+            function renderSwatches() {
+                bgSwatchesEl.innerHTML = '';
+                Object.keys(THEMES).forEach(key => {
+                    const sw = document.createElement('div');
+                    sw.className = 'swatch' + (currentTheme === key ? ' active' : '');
+                    sw.style.background = THEMES[key]['--teal-deep'];
+                    sw.addEventListener('click', () => {
+                        applyTheme(key);
+                        renderSwatches();
+                    });
+                    bgSwatchesEl.appendChild(sw);
+                });
+                const customSw = document.createElement('label');
+                customSw.className = 'swatch custom' + (currentTheme === 'custom' ? ' active' : '');
+                customSw.innerHTML = '<input type="color" id="customColorInput" value="' + customColorValue + '">';
+                bgSwatchesEl.appendChild(customSw);
+                const input = document.getElementById('customColorInput');
+                if (input) {
+                    input.addEventListener('input', (e) => {
+                        customColorValue = e.target.value;
+                        applyTheme('custom', customColorValue);
+                        renderSwatches();
+                    });
+                }
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  SHAPE
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            function setShape(shape) {
+                ringStyle = shape;
+                ringWrapEl.classList.remove('shape-ring', 'shape-beads');
+                ringWrapEl.classList.add('shape-' + shape);
+                try { localStorage.setItem(SHAPE_KEY, shape); } catch (_) { /* ignore */ }
+                document.querySelectorAll('.shape-option').forEach(o => {
+                    o.classList.toggle('active', o.dataset.shape === shape);
+                });
+                renderAll();
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  INCREMENT / RESET / TARGET
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            function vibrate(pattern) {
+                if (navigator.vibrate) { try { navigator.vibrate(pattern); } catch (_) {} }
+            }
+
+            function chime() {
+                try {
+                    const ctx = new(window.AudioContext || window.webkitAudioContext)();
+                    const o = ctx.createOscillator();
+                    const g = ctx.createGain();
+                    o.type = 'sine';
+                    o.frequency.value = 660;
+                    g.gain.value = 0.0001;
+                    o.connect(g);
+                    g.connect(ctx.destination);
+                    const now = ctx.currentTime;
+                    g.gain.exponentialRampToValueAtTime(0.12, now + 0.02);
+                    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+                    o.start(now);
+                    o.stop(now + 0.42);
+                } catch (_) { /* ignore */ }
+            }
+
+            function increment() {
+                const p = currentPhrase();
+                let c = currentCount() + 1;
+                setCurrentCount(c);
+                total += 1;
+                persist();
+                renderAll();
+
+                countEl.classList.add('pulse');
+                setTimeout(() => countEl.classList.remove('pulse'), 140);
+                vibrate(10);
+
+                if (c % p.target === 0) {
+                    flashEl.classList.remove('on');
+                    void flashEl.offsetWidth;
+                    flashEl.classList.add('on');
+                    vibrate([0, 30, 60, 30]);
+                    chime();
+                }
+            }
+
+            function resetCurrent() {
+                setCurrentCount(0);
+                renderAll();
+                confirmOverlay.classList.remove('show');
+            }
+
+            function changeTarget(newTarget) {
+                const p = currentPhrase();
+                p.target = Math.max(1, Math.floor(newTarget));
+                persist();
+                renderAll();
+                renderSelect();
+                targetOverlay.classList.remove('show');
+            }
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  GESTURES: touch + wheel
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            const SWIPE_MIN_DISTANCE = 28;
+            let touchStartY = null;
+            let touchCounted = false;
+
+            window.addEventListener('touchstart', (e) => {
+                touchStartY = e.touches[0].clientY;
+                touchCounted = false;
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (touchStartY === null || touchCounted) return;
+                const y = e.touches[0].clientY;
+                const delta = Math.abs(y - touchStartY);
+                if (delta >= SWIPE_MIN_DISTANCE) {
+                    e.preventDefault();
+                    increment();
+                    touchCounted = true;
+                }
+            }, { passive: false });
+
+            window.addEventListener('touchend', () => {
+                touchStartY = null;
+                touchCounted = false;
+            }, { passive: true });
+
+            let wheelCounted = false;
+            let wheelResetTimer = null;
+            window.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                if (!wheelCounted) {
+                    increment();
+                    wheelCounted = true;
+                }
+                clearTimeout(wheelResetTimer);
+                wheelResetTimer = setTimeout(() => { wheelCounted = false; }, 250);
+            }, { passive: false });
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  EVENT BINDING
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            // reset
+            resetBtn.addEventListener('click', () => {
+                confirmOverlay.classList.add('show');
+            });
+            confirmNo.addEventListener('click', () => {
+                confirmOverlay.classList.remove('show');
+            });
+            confirmYes.addEventListener('click', resetCurrent);
+
+            // settings
+            settingsBtn.addEventListener('click', () => {
+                settingsOverlay.classList.add('show');
+            });
+            settingsClose.addEventListener('click', () => {
+                settingsOverlay.classList.remove('show');
+            });
+
+            // shape
+            document.querySelectorAll('.shape-option').forEach(el => {
+                el.addEventListener('click', () => setShape(el.dataset.shape));
+            });
+
+            // phrase select
+            phraseSelect.addEventListener('change', () => {
+                const idx = parseInt(phraseSelect.value, 10);
+                if (!isNaN(idx) && idx >= 0 && idx < phrases.length) {
+                    activeIndex = idx;
+                    renderAll();
+                    persist();
+                }
+            });
+
+            // add phrase
+            addPhraseBtn.addEventListener('click', () => {
+                const text = newPhraseInput.value.trim();
+                if (!text) {
+                    newPhraseInput.focus();
+                    return;
+                }
+                // check duplicate
+                const exists = phrases.some(p => p.label === text);
+                if (exists) {
+                    alert('هذه التسبيحة موجودة بالفعل');
+                    return;
+                }
+                const newPhrase = {
+                    key: 'custom_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6),
+                    label: text,
+                    short: text.length > 20 ? text.substring(0, 18) + '…' : text,
+                    target: 33,
+                };
+                phrases.push(newPhrase);
+                activeIndex = phrases.length - 1;
+                persist();
+                renderSelect();
+                renderAll();
+                newPhraseInput.value = '';
+                newPhraseInput.focus();
+            });
+
+            // enter key in new phrase input
+            newPhraseInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addPhraseBtn.click();
+                }
+            });
+
+            // edit target
+            editTargetBtn.addEventListener('click', () => {
+                targetInput.value = currentPhrase().target;
+                targetOverlay.classList.add('show');
+                targetInput.focus();
+                targetInput.select();
+            });
+            targetSave.addEventListener('click', () => {
+                const val = parseInt(targetInput.value, 10);
+                if (!isNaN(val) && val > 0) {
+                    changeTarget(val);
+                } else {
+                    alert('يرجى إدخال رقم صحيح أكبر من 0');
+                }
+            });
+            targetCancel.addEventListener('click', () => {
+                targetOverlay.classList.remove('show');
+            });
+            // Enter in target input
+            targetInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    targetSave.click();
+                }
+            });
+
+            // close overlays with Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    confirmOverlay.classList.remove('show');
+                    settingsOverlay.classList.remove('show');
+                    targetOverlay.classList.remove('show');
+                }
+            });
+
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            //  INIT
+            // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+            buildBeads();
+            renderSelect();
+            applyTheme(currentTheme, customColorValue);
+            renderSwatches();
+            setShape(ringStyle);
+            renderAll();
+
+            // ensure activeIndex is valid
+            if (activeIndex >= phrases.length) activeIndex = 0;
+            renderAll();
+
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js').catch(() => {});
+            }
+
+            console.log('📿 سبحة — تطبيق عدّاد التسبيح (نسخة محسّنة)');
+            console.log('🔄 اسحب أو استخدم عجلة الماوس للعدّ');
+            console.log('⌨️  Space / ↑↓ للعدّ  |  R للتصفير  |  Esc للإغلاق');
+        })();
+    </script>
+
 </body>
 </html>
