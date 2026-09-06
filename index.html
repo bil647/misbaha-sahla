@@ -14,6 +14,8 @@
   :root{
     --teal-deep:#0F3D3E;
     --teal-dark:#0A2C2D;
+    --bg-start:#0A2C2D;
+    --bg-end:#061c1d;
     --gold:#C9A227;
     --gold-soft:#E4C766;
     --parchment:#F7F1E3;
@@ -22,13 +24,14 @@
   *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   html,body{
     margin:0; padding:0; height:100%; width:100%;
-    background: radial-gradient(circle at 50% 20%, var(--teal-dark), #061c1d 85%);
+    background: radial-gradient(circle at 50% 20%, var(--bg-start), var(--bg-end) 85%);
     color:var(--parchment);
     font-family:'Tajawal', sans-serif;
     overflow:hidden;
     user-select:none;
     -webkit-user-select:none;
     touch-action:none;
+    transition: background 0.4s ease;
   }
   #app{
     height:100%;
@@ -41,6 +44,23 @@
     position:relative;
   }
 
+  /* ---- settings button ---- */
+  #settingsBtn{
+    position:fixed;
+    top:calc(env(safe-area-inset-top,10px) + 14px);
+    inset-inline-end:18px;
+    width:38px;height:38px;
+    border-radius:50%;
+    border:1px solid rgba(228,199,102,0.25);
+    background:rgba(255,255,255,0.04);
+    color:var(--gold-soft);
+    font-size:18px;
+    display:flex;align-items:center;justify-content:center;
+    z-index:6;
+    cursor:pointer;
+  }
+  #settingsBtn:active{ background:rgba(255,255,255,0.09); }
+
   /* ---- top: phrase + total ---- */
   #top{
     display:flex;
@@ -51,9 +71,12 @@
   }
   #phrase{
     font-family:'Amiri', serif;
-    font-size:clamp(26px, 7vw, 34px);
+    font-size:clamp(22px, 6.4vw, 34px);
     color:var(--gold-soft);
     letter-spacing:0.5px;
+    text-align:center;
+    max-width:88vw;
+    line-height:1.4;
   }
   #totalLabel{
     font-size:13px;
@@ -78,9 +101,18 @@
     align-items:center;
     justify-content:center;
   }
-  svg#ring{ position:absolute; top:0; left:0; width:100%; height:100%; transform:rotate(-90deg); }
-  svg#ring circle.track{ fill:none; stroke:rgba(255,255,255,0.06); stroke-width:10; }
-  svg#ring circle.fill{ fill:none; stroke:var(--gold); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 0.15s ease-out; }
+  svg#ring{ position:absolute; top:0; left:0; width:100%; height:100%; transform:rotate(-90deg); overflow:visible; }
+  svg#ring circle.track{ fill:none; stroke:rgba(255,255,255,0.06); stroke-width:10; transition:opacity 0.25s ease; }
+  svg#ring circle.fill{ fill:none; stroke:var(--gold); stroke-width:10; stroke-linecap:round; transition:stroke-dashoffset 0.15s ease-out, opacity 0.25s ease; }
+
+  #beadsGroup{ transform-origin:110px 110px; opacity:0; transition:opacity 0.25s ease; }
+  #beadsGroup circle.bead{ fill:rgba(255,255,255,0.12); transition:fill 0.15s ease-out; }
+  #beadsGroup circle.bead.lit{ fill:var(--gold); }
+
+  #ringWrap.shape-beads svg#ring circle.track,
+  #ringWrap.shape-beads svg#ring circle.fill{ opacity:0; }
+  #ringWrap.shape-beads #beadsGroup{ opacity:1; animation: spin 90s linear infinite; }
+  @keyframes spin{ from{ transform:rotate(0deg);} to{ transform:rotate(360deg);} }
 
   #count{
     font-family:'Amiri', serif;
@@ -189,10 +221,87 @@
   }
   #confirmYes{ background:var(--gold); color:var(--teal-dark); font-weight:700; }
   #confirmNo{ background:rgba(255,255,255,0.08); color:var(--parchment); }
+
+  /* ---- settings overlay ---- */
+  #settingsOverlay{
+    position:fixed; inset:0;
+    background:rgba(6,20,20,0.9);
+    display:none;
+    align-items:center; justify-content:center;
+    z-index:11;
+  }
+  #settingsOverlay.show{ display:flex; }
+  #settingsBox{
+    background:var(--teal-dark);
+    border:1px solid rgba(228,199,102,0.2);
+    border-radius:18px;
+    padding:24px 26px;
+    max-width:320px;
+    width:88vw;
+  }
+  #settingsBox h3{
+    margin:0 0 20px;
+    font-size:16px;
+    color:var(--gold-soft);
+    text-align:center;
+    font-weight:700;
+  }
+  .settings-section{ margin-bottom:20px; }
+  .settings-label{ font-size:13px; color:var(--sand-muted); margin-bottom:10px; }
+  #bgSwatches{ display:flex; gap:10px; flex-wrap:wrap; }
+  .swatch{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:2px solid transparent;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden;
+    flex-shrink:0;
+  }
+  .swatch.active{ border-color:var(--gold); }
+  .swatch.custom{
+    background:conic-gradient(from 0deg, #C9A227, #7A9E9F, #3D0F1E, #0F2A45, #C9A227);
+    padding:3px;
+  }
+  .swatch.custom input[type=color]{
+    width:150%; height:150%;
+    border:none; padding:0; margin:0;
+    cursor:pointer; background:none;
+  }
+  #shapeOptions{ display:flex; gap:8px; }
+  .shape-option{
+    font-family:'Tajawal', sans-serif;
+    font-size:13px;
+    padding:8px 16px;
+    border-radius:999px;
+    border:1px solid rgba(228,199,102,0.25);
+    background:rgba(255,255,255,0.03);
+    color:var(--sand-muted);
+    cursor:pointer;
+  }
+  .shape-option.active{
+    background:rgba(201,162,39,0.15);
+    border-color:var(--gold);
+    color:var(--gold-soft);
+  }
+  #settingsClose{
+    width:100%;
+    margin-top:6px;
+    font-family:'Tajawal', sans-serif;
+    padding:11px;
+    border-radius:999px;
+    border:none;
+    background:var(--gold);
+    color:var(--teal-dark);
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
 <div id="flash"></div>
+<button id="settingsBtn" aria-label="الإعدادات">⚙</button>
 <div id="app">
 
   <div id="top">
@@ -205,6 +314,7 @@
       <svg id="ring" viewBox="0 0 220 220">
         <circle class="track" cx="110" cy="110" r="100"></circle>
         <circle class="fill" id="ringFill" cx="110" cy="110" r="100"></circle>
+        <g id="beadsGroup"></g>
       </svg>
       <div id="count">0</div>
       <div id="targetLine">الهدف: <span id="targetVal">33</span></div>
@@ -230,19 +340,52 @@
   </div>
 </div>
 
+<div id="settingsOverlay">
+  <div id="settingsBox">
+    <h3>الإعدادات</h3>
+    <div class="settings-section">
+      <div class="settings-label">لون الخلفية</div>
+      <div id="bgSwatches"></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-label">شكل العدّاد</div>
+      <div id="shapeOptions">
+        <div class="shape-option" data-shape="ring">حلقة</div>
+        <div class="shape-option" data-shape="beads">سبحة</div>
+      </div>
+    </div>
+    <button id="settingsClose">تم</button>
+  </div>
+</div>
+
 <script>
 (function(){
   const PHRASES = [
-    { key:"subhan",   label:"سُبْحَانَ اللَّه",      short:"سبحان الله",     target:33  },
-    { key:"hamd",     label:"الْحَمْدُ لِلَّه",       short:"الحمد لله",       target:33  },
-    { key:"tahlil",   label:"لَا إِلَٰهَ إِلَّا اللَّه", short:"لا إله إلا الله", target:33 },
-    { key:"takbir",   label:"اللَّهُ أَكْبَر",        short:"الله أكبر",       target:34  },
-    { key:"istighfar",label:"أَسْتَغْفِرُ اللَّه",     short:"أستغفر الله",     target:100 },
-    { key:"salawat",  label:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّد", short:"الصلاة على النبي", target:100 },
+    { key:"subhan",     label:"سُبْحَانَ اللَّه",                    short:"سبحان الله",       target:33  },
+    { key:"hamd",       label:"الْحَمْدُ لِلَّه",                     short:"الحمد لله",         target:33  },
+    { key:"tahlil",     label:"لَا إِلَٰهَ إِلَّا اللَّه",              short:"لا إله إلا الله",   target:33  },
+    { key:"takbir",     label:"اللَّهُ أَكْبَر",                      short:"الله أكبر",         target:34  },
+    { key:"istighfar",  label:"أَسْتَغْفِرُ اللَّه",                   short:"أستغفر الله",       target:100 },
+    { key:"salawat",    label:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّد",         short:"الصلاة على النبي",  target:100 },
+    { key:"yunus",      label:"لَا إِلَٰهَ إِلَّا أَنْتَ سُبْحَانَكَ إِنِّي كُنْتُ مِنَ الظَّالِمِينَ", short:"تسبيحة يونس", target:100 },
+    { key:"ibrahimiyah",label:"اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ، اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ", short:"الصلاة الإبراهيمية", target:10 },
   ];
 
   const STORE_KEY = "tasbih_counts_v1";
   const TOTAL_KEY = "tasbih_total_v1";
+  const THEME_KEY = "tasbih_theme_v1";
+  const THEME_CUSTOM_KEY = "tasbih_theme_custom_v1";
+  const SHAPE_KEY = "tasbih_shape_v1";
+
+  const THEMES = {
+    teal:     { "--teal-deep":"#0F3D3E", "--teal-dark":"#0A2C2D", "--bg-start":"#0A2C2D", "--bg-end":"#061c1d" },
+    navy:     { "--teal-deep":"#0F2A45", "--teal-dark":"#0A1C2F", "--bg-start":"#0A1C2F", "--bg-end":"#040c14" },
+    emerald:  { "--teal-deep":"#0F3D22", "--teal-dark":"#0A2C18", "--bg-start":"#0A2C18", "--bg-end":"#04140b" },
+    maroon:   { "--teal-deep":"#3D0F1E", "--teal-dark":"#2C0A16", "--bg-start":"#2C0A16", "--bg-end":"#14050a" },
+    midnight: { "--teal-deep":"#242424", "--teal-dark":"#141414", "--bg-start":"#141414", "--bg-end":"#000000" },
+  };
+
+  const BEADS_COUNT = 33;
 
   let counts = {};
   let total = 0;
@@ -258,17 +401,32 @@
     if(lastActive !== null) activeIndex = Math.min(parseInt(lastActive,10) || 0, PHRASES.length-1);
   }catch(e){}
 
+  let currentTheme = "teal";
+  let customColorValue = "#0F3D3E";
+  let ringStyle = "ring";
+  try{
+    currentTheme = localStorage.getItem(THEME_KEY) || "teal";
+    customColorValue = localStorage.getItem(THEME_CUSTOM_KEY) || "#0F3D3E";
+    ringStyle = localStorage.getItem(SHAPE_KEY) || "ring";
+  }catch(e){}
+
   const phraseEl = document.getElementById("phrase");
   const countEl = document.getElementById("count");
   const targetValEl = document.getElementById("targetVal");
   const totalValEl = document.getElementById("totalVal");
   const ringFill = document.getElementById("ringFill");
+  const ringWrapEl = document.getElementById("ringWrap");
+  const beadsGroupEl = document.getElementById("beadsGroup");
   const pillsEl = document.getElementById("pills");
   const resetBtn = document.getElementById("resetBtn");
   const flashEl = document.getElementById("flash");
   const confirmOverlay = document.getElementById("confirmOverlay");
   const confirmYes = document.getElementById("confirmYes");
   const confirmNo = document.getElementById("confirmNo");
+  const settingsBtn = document.getElementById("settingsBtn");
+  const settingsOverlay = document.getElementById("settingsOverlay");
+  const settingsClose = document.getElementById("settingsClose");
+  const bgSwatchesEl = document.getElementById("bgSwatches");
 
   const CIRC = 2 * Math.PI * 100;
   ringFill.style.strokeDasharray = CIRC;
@@ -306,6 +464,31 @@
     });
   }
 
+  /* ---- beads ring (misbaha-style) ---- */
+  function polarPoint(cx, cy, r, angleDeg){
+    const rad = (angleDeg - 90) * Math.PI/180;
+    return { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+  }
+  function buildBeads(){
+    beadsGroupEl.innerHTML = "";
+    for(let i=0;i<BEADS_COUNT;i++){
+      const angle = (360/BEADS_COUNT)*i;
+      const pt = polarPoint(110,110,100,angle);
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", pt.x.toFixed(2));
+      c.setAttribute("cy", pt.y.toFixed(2));
+      c.setAttribute("r", 7);
+      c.setAttribute("class","bead");
+      c.setAttribute("data-idx", i);
+      beadsGroupEl.appendChild(c);
+    }
+  }
+  function updateBeads(progress, isFullCycle){
+    const lit = isFullCycle ? BEADS_COUNT : Math.round(progress*BEADS_COUNT);
+    const beads = beadsGroupEl.querySelectorAll(".bead");
+    beads.forEach((b,i)=>{ b.classList.toggle("lit", i < lit); });
+  }
+
   function renderAll(){
     const p = PHRASES[activeIndex];
     phraseEl.textContent = p.label;
@@ -314,8 +497,10 @@
     targetValEl.textContent = p.target;
     totalValEl.textContent = total;
     const progress = (c % p.target) / p.target;
+    const isFullCycle = (c > 0 && progress === 0);
     const offset = CIRC * (1 - progress);
-    ringFill.style.strokeDashoffset = (c > 0 && progress === 0) ? 0 : offset;
+    ringFill.style.strokeDashoffset = isFullCycle ? 0 : offset;
+    updateBeads(progress, isFullCycle);
   }
 
   function vibrate(pattern){
@@ -360,44 +545,44 @@
     }
   }
 
-  /* ---- scroll capture: wheel + touch drag ---- */
-  const THRESHOLD = 46; // px of movement per count
+  /* ---- scroll capture: ONE count per swipe / wheel gesture ---- */
+  const SWIPE_MIN_DISTANCE = 28; // px of movement needed to register a swipe as one count
   let touchStartY = null;
-  let touchAccum = 0;
-  let wheelAccum = 0;
-  let wheelTimer = null;
-
-  window.addEventListener("wheel", (e) => {
-    e.preventDefault();
-    wheelAccum += Math.abs(e.deltaY);
-    while(wheelAccum >= THRESHOLD){
-      increment();
-      wheelAccum -= THRESHOLD;
-    }
-  }, { passive:false });
+  let touchCounted = false;
 
   window.addEventListener("touchstart", (e) => {
     touchStartY = e.touches[0].clientY;
-    touchAccum = 0;
+    touchCounted = false;
   }, { passive:true });
 
   window.addEventListener("touchmove", (e) => {
     e.preventDefault();
-    if(touchStartY === null) return;
+    if(touchStartY === null || touchCounted) return;
     const y = e.touches[0].clientY;
     const delta = Math.abs(y - touchStartY);
-    touchStartY = y;
-    touchAccum += delta;
-    while(touchAccum >= THRESHOLD){
+    if(delta >= SWIPE_MIN_DISTANCE){
       increment();
-      touchAccum -= THRESHOLD;
+      touchCounted = true; // one swipe = one count, ignore further movement until finger lifts
     }
   }, { passive:false });
 
   window.addEventListener("touchend", () => {
     touchStartY = null;
-    touchAccum = 0;
+    touchCounted = false;
   }, { passive:true });
+
+  // mouse wheel: one count per scroll gesture (burst of wheel events)
+  let wheelCounted = false;
+  let wheelResetTimer = null;
+  window.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    if(!wheelCounted){
+      increment();
+      wheelCounted = true;
+    }
+    clearTimeout(wheelResetTimer);
+    wheelResetTimer = setTimeout(() => { wheelCounted = false; }, 250);
+  }, { passive:false });
 
   /* ---- reset ---- */
   resetBtn.addEventListener("click", () => {
@@ -412,7 +597,79 @@
     confirmOverlay.classList.remove("show");
   });
 
+  /* ---- settings: background theme ---- */
+  function shade(hex, percent){
+    let f = parseInt(hex.slice(1),16);
+    let t = percent<0 ? 0 : 255;
+    let p = percent<0 ? percent*-1 : percent;
+    let R = f>>16, G = f>>8 & 0x00FF, B = f & 0x0000FF;
+    return "#"+(0x1000000+(Math.round((t-R)*p)+R)*0x10000+(Math.round((t-G)*p)+G)*0x100+(Math.round((t-B)*p)+B)).toString(16).slice(1);
+  }
+  function buildThemeFromHex(hex){
+    return {
+      "--teal-deep": hex,
+      "--teal-dark": shade(hex, -0.35),
+      "--bg-start": shade(hex, -0.35),
+      "--bg-end": shade(hex, -0.65),
+    };
+  }
+  function applyTheme(key, customHex){
+    const vars = key === "custom" ? buildThemeFromHex(customHex || customColorValue) : (THEMES[key] || THEMES.teal);
+    Object.keys(vars).forEach(k => document.documentElement.style.setProperty(k, vars[k]));
+    currentTheme = key;
+    try{
+      localStorage.setItem(THEME_KEY, key);
+      if(key === "custom") localStorage.setItem(THEME_CUSTOM_KEY, customColorValue);
+    }catch(e){}
+  }
+  function renderSwatches(){
+    bgSwatchesEl.innerHTML = "";
+    Object.keys(THEMES).forEach(key=>{
+      const sw = document.createElement("div");
+      sw.className = "swatch" + (currentTheme === key ? " active" : "");
+      sw.style.background = THEMES[key]["--teal-deep"];
+      sw.addEventListener("click", () => {
+        applyTheme(key);
+        renderSwatches();
+      });
+      bgSwatchesEl.appendChild(sw);
+    });
+    const customSw = document.createElement("label");
+    customSw.className = "swatch custom" + (currentTheme === "custom" ? " active" : "");
+    customSw.innerHTML = '<input type="color" id="customColorInput" value="'+ customColorValue +'">';
+    bgSwatchesEl.appendChild(customSw);
+    document.getElementById("customColorInput").addEventListener("input", (e) => {
+      customColorValue = e.target.value;
+      applyTheme("custom", customColorValue);
+      renderSwatches();
+    });
+  }
+
+  /* ---- settings: counter shape ---- */
+  function setShape(shape){
+    ringStyle = shape;
+    ringWrapEl.classList.remove("shape-ring","shape-beads");
+    ringWrapEl.classList.add("shape-" + shape);
+    try{ localStorage.setItem(SHAPE_KEY, shape); }catch(e){}
+    document.querySelectorAll(".shape-option").forEach(o=>{
+      o.classList.toggle("active", o.dataset.shape === shape);
+    });
+    renderAll();
+  }
+
+  document.querySelectorAll(".shape-option").forEach(el=>{
+    el.addEventListener("click", () => setShape(el.dataset.shape));
+  });
+
+  settingsBtn.addEventListener("click", () => settingsOverlay.classList.add("show"));
+  settingsClose.addEventListener("click", () => settingsOverlay.classList.remove("show"));
+
+  /* ---- init ---- */
+  buildBeads();
   renderPills();
+  applyTheme(currentTheme, customColorValue);
+  renderSwatches();
+  setShape(ringStyle);
   renderAll();
 
   if("serviceWorker" in navigator){
